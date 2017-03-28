@@ -10,10 +10,12 @@
 
 
 #include "stm32f0xx.h"
+#include "Hbridge.h"
 			
 
 int main(void)
 {
-
+	H_bridge *Motor = new H_bridge(1,3,GPIOA,4,5,6,7);
+	Motor->Move(600,600);
 	for(;;);
 }

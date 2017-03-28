@@ -7,7 +7,7 @@
 
 #include "Hbridge.h"
 
-H_bridge::H_bridge(uint16_t _EnableLeft, uint16_t _EnableRight, GPIO_TypeDef *_ModeGPIO, uint16_t _ModePin1, uint16_t _ModePin2, uint16_t _ModePin3, uint16_t _ModePin4)
+H_bridge::H_bridge(uint8_t _EnableLeft, uint8_t _EnableRight, GPIO_TypeDef *_ModeGPIO, uint8_t _ModePin1, uint8_t _ModePin2, uint8_t _ModePin3, uint8_t _ModePin4)
 {
 	this->EnableLeft = _EnableLeft;
 	this->EnableRight = _EnableRight;
@@ -18,30 +18,35 @@ H_bridge::H_bridge(uint16_t _EnableLeft, uint16_t _EnableRight, GPIO_TypeDef *_M
 	this->ModeGPIO = _ModeGPIO;
 
 	InitGPIO();
-
+	InitPWM();
 }
 
 void H_bridge::InitGPIO(void)
 {
-	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA,ENABLE);
+	if(ModeGPIO == GPIOA)	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA,ENABLE);
+	else if(ModeGPIO == GPIOB)	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB,ENABLE);
+	else if(ModeGPIO == GPIOC)	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOC,ENABLE);
+	else if(ModeGPIO == GPIOD)	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOD,ENABLE);
+	else if(ModeGPIO == GPIOE)	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOE,ENABLE);
+
+	RCC_APB1PeriphClockCmd(RCC_APB1ENR_TIM3EN,ENABLE);		//TIMER3 clock enable
+
 	GPIO_InitTypeDef GPIO_InitStructure;
 
-	GPIO_InitStructure.GPIO_Pin = this->ModePin1 | this->ModePin2 | this->ModePin3 | this->ModePin4;
+	GPIO_InitStructure.GPIO_Pin = (1 << this->ModePin1) | (1 << this->ModePin2) | (1 << this->ModePin3) | (1 << this->ModePin4);
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-
 	GPIO_Init(ModeGPIO,&GPIO_InitStructure);
 
-	//TODO: treba dorobit vseobecne
-	GPIO_PinAFConfig(GPIOA,GPIO_PinSource4,GPIO_AF_2);
-	GPIO_PinAFConfig(GPIOA,GPIO_PinSource6,GPIO_AF_2);
-
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4| GPIO_Pin_6;
+	GPIO_InitStructure.GPIO_Pin = (1 << this->EnableLeft)| (1 << this->EnableRight);
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+	GPIO_PinAFConfig(GPIOA,this->EnableLeft,GPIO_AF_1);
+	GPIO_PinAFConfig(GPIOA,this->EnableRight,GPIO_AF_1);
+
 }
 
 void H_bridge::InitPWM(void)
@@ -75,6 +80,11 @@ void H_bridge::InitPWM(void)
 
 void H_bridge::Move(uint16_t speedL, uint16_t speedR)
 {
+	GPIO_WriteBit(ModeGPIO,(1 << ModePin1),Bit_SET);
+	GPIO_WriteBit(ModeGPIO,(1 << ModePin2),Bit_RESET);
+	GPIO_WriteBit(ModeGPIO,(1 << ModePin3),Bit_SET);
+	GPIO_WriteBit(ModeGPIO,(1 << ModePin4),Bit_RESET);
+
 	this->OCInit.TIM_Pulse=speedL;
 	TIM_OC1Init(TIM3,&this->OCInit);
 
