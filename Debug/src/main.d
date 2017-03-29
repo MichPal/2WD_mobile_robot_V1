@@ -28,7 +28,7 @@ src/main.o: ../src/main.cpp \
  C:/Users/Michal/workspace/2WD_mobile_robot_V1/StdPeriph_Driver/inc/stm32f0xx_usart.h \
  C:/Users/Michal/workspace/2WD_mobile_robot_V1/StdPeriph_Driver/inc/stm32f0xx_wwdg.h \
  C:/Users/Michal/workspace/2WD_mobile_robot_V1/StdPeriph_Driver/inc/stm32f0xx_misc.h \
- ../src/Hbridge.h
+ ../src/Hbridge.h ../src/USART.h
 
 C:/Users/Michal/workspace/2WD_mobile_robot_V1/CMSIS/device/stm32f0xx.h:
 
@@ -89,3 +89,5 @@ C:/Users/Michal/workspace/2WD_mobile_robot_V1/StdPeriph_Driver/inc/stm32f0xx_wwd
 C:/Users/Michal/workspace/2WD_mobile_robot_V1/StdPeriph_Driver/inc/stm32f0xx_misc.h:
 
 ../src/Hbridge.h:
+
+../src/USART.h:

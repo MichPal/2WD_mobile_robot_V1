@@ -9,10 +9,12 @@ C_SRCS += \
 
 CPP_SRCS += \
 ../src/Hbridge.cpp \
+../src/USART.cpp \
 ../src/main.cpp 
 
 OBJS += \
 ./src/Hbridge.o \
+./src/USART.o \
 ./src/main.o \
 ./src/syscalls.o \
 ./src/system_stm32f0xx.o 
@@ -23,6 +25,7 @@ C_DEPS += \
 
 CPP_DEPS += \
 ./src/Hbridge.d \
+./src/USART.d \
 ./src/main.d 
 
 
